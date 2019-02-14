@@ -1,4 +1,4 @@
-package poc;
+package poc.unit;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
@@ -14,20 +14,23 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import poc.GreetingController;
+import poc.GreetingService;
+
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(GreetingController.class)
-public class WebMockTest {
+public class GreetingMockTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private GreetingService service;
+    private GreetingService greeting;
 
     @Test
     public void greetingShouldReturnMessageFromService() throws Exception {
-        when(service.greet()).thenReturn("Hello Mock");
+        when(greeting.greet()).thenReturn("Hello Mock");
         this.mockMvc.perform(get("/greeting")).andDo(print()).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Hello Mock")));
     }

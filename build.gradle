@@ -1,11 +1,17 @@
 buildscript {
-    repositories { mavenCentral() }
+    repositories {
+        mavenCentral()
+    }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RELEASE")
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RELEASE"
     }
 }
 
-plugins { id "io.spring.dependency-management" version "1.0.6.RELEASE" }
+plugins {
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "com.wiredforcode.spawn" version "0.8.2"
+}
+
 
 ext { springBootVersion = '2.0.5.RELEASE' }
 
@@ -13,6 +19,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
+apply plugin: "com.wiredforcode.spawn"
 
 
 repositories {
@@ -24,5 +31,32 @@ targetCompatibility = 1.8
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:2.1.2.RELEASE")
-    testCompile("org.springframework.boot:spring-boot-starter-test:2.1.2.RELEASE")
+    testCompile('org.springframework.boot:spring-boot-starter-test:2.1.2.RELEASE',
+            'org.junit.jupiter:junit-jupiter-api:5.3.2',
+            'org.junit.jupiter:junit-jupiter-params:5.3.2',
+            'io.rest-assured:rest-assured:3.3.0',
+            'io.rest-assured:json-path:3.3.0',
+            'io.rest-assured:json-schema-validator:3.3.0',
+            'io.rest-assured:rest-assured-all:3.3.0',
+            'com.googlecode.json-simple:json-simple:1.1'
+    )
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.3.2')
+}
+task startServer(type:Exec){
+    commandLine 'java', '-jar', 'build/libs/springPOC.jar'
+}
+
+
+task integTest(type: Test) {
+   // dependsOn('startServer')
+    failFast = true
+    maxParallelForks 4
+    useJUnitPlatform()
+}
+
+
+tasks.withType(Test) {
+    testLogging {
+        events "passed", "failed", "standardError"
+    }
 }
