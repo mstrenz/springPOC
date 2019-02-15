@@ -42,13 +42,16 @@ dependencies {
     )
     testRuntime('org.junit.jupiter:junit-jupiter-engine:5.3.2')
 }
-task startServer(type:Exec){
-    commandLine 'java', '-jar', 'build/libs/springPOC.jar'
+
+task startServer(type: SpawnProcessTask, dependsOn: 'build') {
+    println "Setup"
+    command "java -jar build/libs/springPOC.jar"
+    ready 'Started Application'
 }
 
-
 task integTest(type: Test) {
-   // dependsOn('startServer')
+    println "Test"
+    dependsOn('startServer')
     failFast = true
     maxParallelForks 4
     useJUnitPlatform()
@@ -60,3 +63,7 @@ tasks.withType(Test) {
         events "passed", "failed", "standardError"
     }
 }
+
+task stopServer(type: KillProcessTask)
+
+stopServer.mustRunAfter integTest
